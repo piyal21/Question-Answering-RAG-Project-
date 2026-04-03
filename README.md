@@ -1,42 +1,109 @@
+# Bangla Literature Q&A — RAG Pipeline
 
+A Retrieval-Augmented Generation (RAG) system that answers questions about HSC Bangla 1st Paper using OpenAI GPT and FAISS vector search.
 
-* RAG Pipeline : 
-   
+## RAG Pipeline
 
-<img width="589" height="723" alt="RAG - visual selection" src="https://github.com/user-attachments/assets/10d5a683-ea72-4c07-8039-1ddcb615c880" />
+```
+PDF → Extract (PyMuPDF) → Clean (GPT-4o-mini) → Chunk (GPT-4o-mini) → Embed (HuggingFace) → FAISS Index
+                                                                                                    ↓
+User Query → Embed → Similarity Search (FAISS) → Top-K Chunks → Generate Answer (GPT-3.5-turbo) → Response
+```
 
-1. Setup Guide
-   - Clone the repository
-   - create a virtual environment
-   - Install all the requirements [ requirements.txt ]
-   - Create a .env file [ hold the openai api key ]
-   - [ main.ipynb ] file holds the main code for this project.
-   - [ test.py ] is created to implement UI (using Streamlit ) and api implementation.
+## Setup
 
-2. Tools Used
-   - Language Model : OpenAI GPT
-   - Embeddings : OpenAIEmbeddings (langchain)
-   - Vectore Store : FAISS
-   - Documnet Parsing : PyMuPDF
-   - API Framework : FLASK
-   - Coding Environment : VS Code
+1. Clone the repository
+2. Create a virtual environment and activate it
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Create a `.env` file from the template:
+   ```bash
+   cp .env.example .env
+   ```
+5. Add your OpenAI API key to `.env`
 
-3. Sample Questions / Query
-   - user query : বিয়ের সময় কল্যাণীর প্রকৃত বয়স কত ছিল?
-   - output : ১৫ বছর
+## Usage
 
-4. API documentation
-   - Description: This FLASK API accepts a user query and returns an answer generated from the most relevant context in the document using a RAG (Retrieval-Augmented Generation) pipeline.
+### Step 1: Build the FAISS Index (run once)
+```bash
+python indexing.py
+```
+This extracts text from the PDF, cleans it, chunks it semantically, embeds with HuggingFace, and saves the FAISS index.
 
-5. Evaluation Metrics
-  - Groundness score is calculated in the [Rag_evaluation.ipynb] file
+### Step 2: Run the Q&A System
 
+**Demo script:**
+```bash
+python main.py
+```
 
-6.Q/A : 
-   - To extract text from the PDF I used  'fitz' library which is python binding for 'PyMuPDF'. Yes I have faced some challages during the extraction. As the library is not familiar with Bengali text,during extraction it would loose some meaningful words.So I used openAI[gpt -4.0-mini]  to hold the meaningful words during extraction.
-   - Chunking is based on the character limit. I implemented the chunking using python but same as text extraction from pdf the chunking is leaving meaningful text no matter the chunk size or overlaping size . So I also used openAI to chunk the text and hold the meaning of the text.The meaning of the text is most important because without it the retrieval function will retrieve irrelevant data.
-   - Embedding model used - OpenAIEmbeddings ( text-embedding-ada-002 ) from the langchain library.This models gives state-of-the-art semantic representations of the text. This embedding gives similar words position closely in the vector data base which is used for long-term-memory.
-   - The comparison is done by embedding the query with the same embedding model and then computing similarity score with the stored chunks. For storing the chunks I used ( FAISS ) . The similarity searh method is ( Cosine Similarity )
-   - By using the same embedding model to embed the query and the document chunks into the same semantic vector space, meaningful comparison is guaranteed. The system can interpret both inputs with the same contextual understanding because of this consistency.If the query does not contain enough data the retrieval may return less relevant data/chunks and the llm may hallucinate .But the system prompt is given in such a way that it will not asnwer if it does not know/get  the accurate [ground truth] answer.
-   -  The rsults seems relevant, and if it doesn't show relevant information better chunking , improving the embedding and adding a post-retrieval filtering may enhance the performance.
-     
+**Streamlit UI:**
+```bash
+streamlit run app.py
+```
+
+**Flask API:**
+```bash
+python api.py
+```
+Then send a POST request:
+```bash
+curl -X POST http://localhost:5000/ask \
+  -H "Content-Type: application/json" \
+  -d '{"query": "বিয়ের সময় কল্যাণীর প্রকৃত বয়স কত ছিল?"}'
+```
+
+### Evaluate Groundedness
+```bash
+python evaluation.py
+```
+
+## Project Structure
+
+| File | Description |
+|------|-------------|
+| `config.py` | Central configuration (env, API client, constants) |
+| `extraction.py` | PDF text extraction using PyMuPDF |
+| `cleaning.py` | Text cleaning via OpenAI (preserves Bangla semantics) |
+| `chunking.py` | Semantic chunking via OpenAI (processes full document) |
+| `indexing.py` | CLI script to build the FAISS index |
+| `retrieval.py` | FAISS similarity search with lazy-loaded index |
+| `generation.py` | Answer generation with short-term memory |
+| `evaluation.py` | Groundedness scoring via cosine similarity |
+| `main.py` | Interactive demo script |
+| `api.py` | Flask REST API (stateless) |
+| `app.py` | Streamlit chat UI |
+
+## Tools Used
+
+| Component | Tool |
+|-----------|------|
+| Language Model | OpenAI GPT-3.5-turbo (generation), GPT-4o-mini (cleaning/chunking) |
+| Embeddings | HuggingFace `paraphrase-multilingual-MiniLM-L12-v2` (free, local) |
+| Vector Store | FAISS |
+| Document Parsing | PyMuPDF |
+| API Framework | Flask |
+| UI Framework | Streamlit |
+
+## Sample Q&A
+
+- **Query:** বিয়ের সময় কল্যাণীর প্রকৃত বয়স কত ছিল?
+- **Answer:** ১৫ বছর
+
+## API Documentation
+
+**POST** `/ask`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `query` | string | The question to answer |
+
+**Response:**
+```json
+{
+  "question": "বিয়ের সময় কল্যাণীর প্রকৃত বয়স কত ছিল?",
+  "answer": "১৫ বছর"
+}
+```
