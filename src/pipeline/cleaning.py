@@ -1,4 +1,4 @@
-from config import client, CLEANING_MODEL
+from src.config import client, CLEANING_MODEL
 
 
 def clean_text_with_openai(raw_text):

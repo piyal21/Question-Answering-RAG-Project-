@@ -1,7 +1,7 @@
 """Flask REST API for the Bangla Literature Q&A system.
 
-Usage:
-    python api.py
+Run from project root:
+    python -m app.api
 
 Endpoint:
     POST /ask
@@ -10,7 +10,7 @@ Endpoint:
 """
 
 from flask import Flask, request, jsonify
-from generation import generate_answer
+from src.rag.generation import generate_answer
 
 app = Flask(__name__)
 
@@ -24,7 +24,7 @@ def ask_question():
         return jsonify({"error": "Missing 'query' field"}), 400
 
     try:
-        memory = []  # Stateless: no conversation history across requests
+        memory = []
         answer = generate_answer(query, memory)
     except FileNotFoundError as e:
         return jsonify({"error": str(e)}), 503

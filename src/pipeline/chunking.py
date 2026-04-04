@@ -1,4 +1,4 @@
-from config import client, CHUNKING_MODEL, DESIRED_CHUNK_COUNT, CHUNK_WINDOW_SIZE
+from src.config import client, CHUNKING_MODEL, DESIRED_CHUNK_COUNT, CHUNK_WINDOW_SIZE
 
 
 def _split_into_windows(text, max_size=CHUNK_WINDOW_SIZE):
@@ -45,10 +45,7 @@ Semantic Chunks:
 
 
 def split_into_semantic_chunks(cleaned_text, desired_chunk_count=DESIRED_CHUNK_COUNT):
-    """Split the full cleaned text into semantic chunks by processing it in windows.
-
-    This fixes the original truncation bug where only the first 3500 chars were processed.
-    """
+    """Split the full cleaned text into semantic chunks by processing it in windows."""
     windows = _split_into_windows(cleaned_text)
     chunks_per_window = max(1, desired_chunk_count // len(windows))
 

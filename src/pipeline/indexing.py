@@ -1,14 +1,14 @@
 """Build the FAISS index from the source PDF.
 
-Run this script once, or whenever the PDF changes:
-    python indexing.py
+Run from project root:
+    python -m src.pipeline.indexing
 """
 
 from langchain_community.vectorstores import FAISS
-from config import get_embeddings, PDF_PATH, INDEX_DIR
-from extraction import extract_raw_pdf_text
-from cleaning import clean_text_with_openai
-from chunking import split_into_semantic_chunks
+from src.config import get_embeddings, PDF_PATH, INDEX_DIR
+from src.pipeline.extraction import extract_raw_pdf_text
+from src.pipeline.cleaning import clean_text_with_openai
+from src.pipeline.chunking import split_into_semantic_chunks
 
 
 def build_index(pdf_path=PDF_PATH, index_dir=INDEX_DIR):

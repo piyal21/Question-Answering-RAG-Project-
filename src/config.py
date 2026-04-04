@@ -10,9 +10,12 @@ if not OPENAI_API_KEY:
 
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
+# Project root (one level up from this file)
+PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
+
 # Paths
-PDF_PATH = os.path.join(os.path.dirname(__file__), "data", "HSC26_Bangla_1st_Paper.pdf")
-INDEX_DIR = os.path.join(os.path.dirname(__file__), "index", "faiss_index")
+PDF_PATH = os.path.join(PROJECT_ROOT, "data", "HSC26_Bangla_1st_Paper.pdf")
+INDEX_DIR = os.path.join(PROJECT_ROOT, "index", "faiss_index")
 
 # Models
 CLEANING_MODEL = "gpt-4o-mini"

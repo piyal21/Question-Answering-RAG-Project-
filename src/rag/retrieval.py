@@ -1,6 +1,6 @@
 import os
 from langchain_community.vectorstores import FAISS
-from config import get_embeddings, INDEX_DIR, TOP_K
+from src.config import get_embeddings, INDEX_DIR, TOP_K
 
 _vector_store = None
 
@@ -12,7 +12,7 @@ def _load_store():
         index_path = os.path.join(INDEX_DIR, "index.faiss")
         if not os.path.exists(index_path):
             raise FileNotFoundError(
-                f"FAISS index not found at {INDEX_DIR}. Run: python indexing.py"
+                f"FAISS index not found at {INDEX_DIR}. Run: python -m src.pipeline.indexing"
             )
         _vector_store = FAISS.load_local(
             INDEX_DIR,

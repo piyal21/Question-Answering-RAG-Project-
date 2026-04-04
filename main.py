@@ -1,12 +1,12 @@
-"""Full pipeline demo — equivalent of main.ipynb.
+"""Full pipeline demo.
 
 Prerequisites:
     1. pip install -r requirements.txt
     2. Copy .env.example to .env and add your OpenAI API key
-    3. python indexing.py  (build the FAISS index first)
+    3. python -m src.pipeline.indexing  (build the FAISS index first)
 """
 
-from generation import generate_answer
+from src.rag.generation import generate_answer
 
 
 def main():

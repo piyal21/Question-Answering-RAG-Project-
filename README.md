@@ -28,7 +28,7 @@ User Query → Embed → Similarity Search (FAISS) → Top-K Chunks → Generate
 
 ### Step 1: Build the FAISS Index (run once)
 ```bash
-python indexing.py
+python -m src.pipeline.indexing
 ```
 This extracts text from the PDF, cleans it, chunks it semantically, embeds with HuggingFace, and saves the FAISS index.
 
@@ -41,12 +41,12 @@ python main.py
 
 **Streamlit UI:**
 ```bash
-streamlit run app.py
+streamlit run app/streamlit_app.py
 ```
 
 **Flask API:**
 ```bash
-python api.py
+python -m app.api
 ```
 Then send a POST request:
 ```bash
@@ -57,24 +57,40 @@ curl -X POST http://localhost:5000/ask \
 
 ### Evaluate Groundedness
 ```bash
-python evaluation.py
+python -m src.evaluation
 ```
 
 ## Project Structure
 
-| File | Description |
-|------|-------------|
-| `config.py` | Central configuration (env, API client, constants) |
-| `extraction.py` | PDF text extraction using PyMuPDF |
-| `cleaning.py` | Text cleaning via OpenAI (preserves Bangla semantics) |
-| `chunking.py` | Semantic chunking via OpenAI (processes full document) |
-| `indexing.py` | CLI script to build the FAISS index |
-| `retrieval.py` | FAISS similarity search with lazy-loaded index |
-| `generation.py` | Answer generation with short-term memory |
-| `evaluation.py` | Groundedness scoring via cosine similarity |
-| `main.py` | Interactive demo script |
-| `api.py` | Flask REST API (stateless) |
-| `app.py` | Streamlit chat UI |
+```
+├── main.py                         # Interactive demo script
+├── requirements.txt
+├── .env.example
+│
+├── src/                            # Core source code
+│   ├── config.py                   # Central configuration (env, API client, constants)
+│   ├── evaluation.py               # Groundedness scoring via cosine similarity
+│   │
+│   ├── pipeline/                   # Data ingestion pipeline
+│   │   ├── extraction.py           # PDF text extraction using PyMuPDF
+│   │   ├── cleaning.py             # Text cleaning via OpenAI
+│   │   ├── chunking.py             # Semantic chunking via OpenAI
+│   │   └── indexing.py             # Build the FAISS index
+│   │
+│   └── rag/                        # Retrieval & generation
+│       ├── retrieval.py            # FAISS similarity search
+│       └── generation.py           # Answer generation with short-term memory
+│
+├── app/                            # Application interfaces
+│   ├── api.py                      # Flask REST API
+│   └── streamlit_app.py            # Streamlit chat UI
+│
+├── data/                           # Source documents
+│   └── HSC26_Bangla_1st_Paper.pdf
+│
+└── index/                          # Generated FAISS index (gitignored)
+    └── faiss_index/
+```
 
 ## Tools Used
 

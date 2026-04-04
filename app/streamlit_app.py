@@ -1,11 +1,11 @@
 """Streamlit UI for the Bangla Literature Q&A Bot.
 
-Usage:
-    streamlit run app.py
+Run from project root:
+    streamlit run app/streamlit_app.py
 """
 
 import streamlit as st
-from generation import generate_answer
+from src.rag.generation import generate_answer
 
 st.title("Bangla Literature Q&A Bot")
 
@@ -22,7 +22,7 @@ if user_query:
             st.markdown("**Answer:**")
             st.write(answer)
         except FileNotFoundError:
-            st.error("FAISS index not found. Please run `python indexing.py` first.")
+            st.error("FAISS index not found. Please run `python -m src.pipeline.indexing` first.")
         except Exception as e:
             st.error(f"Error: {e}")
 

@@ -1,5 +1,5 @@
-from config import client, GENERATION_MODEL, SHORT_TERM_MEMORY_MAX
-from retrieval import retrieve_similar_chunks
+from src.config import client, GENERATION_MODEL, SHORT_TERM_MEMORY_MAX
+from src.rag.retrieval import retrieve_similar_chunks
 
 
 def update_short_term_memory(memory, user_question, bot_answer, max_len=SHORT_TERM_MEMORY_MAX):

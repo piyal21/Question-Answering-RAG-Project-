@@ -1,5 +1,5 @@
 import fitz
-from config import PDF_PATH
+from src.config import PDF_PATH
 
 
 def extract_raw_pdf_text(pdf_path=PDF_PATH):

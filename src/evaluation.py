@@ -1,9 +1,13 @@
-"""Evaluate RAG groundedness using cosine similarity between answer and retrieved context."""
+"""Evaluate RAG groundedness using cosine similarity between answer and retrieved context.
+
+Run from project root:
+    python -m src.evaluation
+"""
 
 from sklearn.metrics.pairwise import cosine_similarity
-from config import get_embeddings
-from retrieval import retrieve_similar_chunks
-from generation import generate_answer
+from src.config import get_embeddings
+from src.rag.retrieval import retrieve_similar_chunks
+from src.rag.generation import generate_answer
 
 
 def evaluate_groundedness(answer, retrieved_chunks):
